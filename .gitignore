@@ -1,0 +1,4 @@
+*.o
+/cmd_int
+/malloc_check
+/mm_test
