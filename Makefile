@@ -3,7 +3,10 @@ CC = gcc
 CCWARNINGS = -W -Wall -Wno-unused-parameter -Wno-unused-variable
 CCOPTS     = -std=c11 -g -O0
 
-CFLAGS = $(CCWARNINGS) $(CCOPTS)
+// CFLAGS = $(CCWARNINGS) $(CCOPTS)
+
+CFLAGS = -c -Wall $(shell pkg-config --cflags check)
+TST_LIBS = $(shell pkg-config --libs check)
 
 TEST_SOURCES := test_mm.c mm.c memory_setup.c
 TEST_OBJECTS := $(TEST_SOURCES:.c=.o)
@@ -23,7 +26,7 @@ APP_EXECUTABLE  = cmd_int
 all: $(TEST_EXECUTABLE) $(CHECK_EXECUTABLE) $(APP_EXECUTABLE)
 
 %.o: %.c mm.h
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $< -o $@
 
 $(TEST_EXECUTABLE): $(TEST_OBJECTS)
 	$(CC) $(CFLAGS) $(TEST_OBJECTS) -o $@ 
