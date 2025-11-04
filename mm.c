@@ -25,7 +25,7 @@ typedef struct header {
 #define SET_NEXT(p,n)  p->next = (void *) (((uintptr_t) (n) & ~0x1) | ((uintptr_t) p->next & 0x1)) /* Preserve free flag */
 #define GET_FREE(p)    (uint8_t) ( (uintptr_t) (p->next) & 0x1 )   /* OK -- do not change */
 #define SET_FREE(p, f)  p->next = (void *) (((uintptr_t) p->next & ~0x1) | ((f) & 0x1)) /* Set free bit of p->next to f */
-#define SIZE(p)        (size_t) ((uintptr_t) p->next - ((uintptr_t) p + sizeof(BlockHeader)) )/* Calculate size of block from p and p->next */
+#define SIZE(p)        (size_t) ((uintptr_t) GET_NEXT(p) - ((uintptr_t) p + sizeof(BlockHeader)) )/* Calculate size of block from p and p->next */
 
 #define MIN_SIZE     (8)   // A block should have at least 8 bytes available for the user
 
@@ -39,8 +39,9 @@ static BlockHeader * current = NULL;
  *
  */
 void simple_init() {
-  uintptr_t aligned_memory_start = memory_start;  /* TODO: Alignment */
-  uintptr_t aligned_memory_end   = memory_end;    /* TODO: Alignment */
+  // address + (8 - address % 8) should align our addresses to 8 byte alignment
+  uintptr_t aligned_memory_start = memory_start + (8 - memory_start % 8);  /* TODO: Alignment */
+  uintptr_t aligned_memory_end   = memory_end + (8 - memory_end % 8);    /* TODO: Alignment */
   BlockHeader * last;
 
   /* Already initalized ? */
@@ -48,6 +49,13 @@ void simple_init() {
     /* Check that we have room for at least one free block and an end header */
     if (aligned_memory_start + 2*sizeof(BlockHeader) + MIN_SIZE <= aligned_memory_end) {
       /* TODO: Place first and last blocks and set links and free flags properly */
+      first = (BlockHeader *) aligned_memory_start;
+      last = first + SIZE(first);
+      SET_NEXT(first, last);
+      SET_NEXT(last, first);
+      SET_FREE(first, 1);
+      SET_FREE(last, 1);
+
     }
     current = first;     
   } 
@@ -67,11 +75,12 @@ void simple_init() {
 void* simple_malloc(size_t size) {
   
   if (first == NULL) {
+    printf("init simple");
     simple_init();
     if (first == NULL) return NULL;
   }
 
-  size_t aligned_size = size;  /* TODO: Alignment */
+  size_t aligned_size = size + (8 - size % 8);  // Add padding /* TODO: Alignment */
 
   /* Search for a free block */
   BlockHeader * search_start = current;
