@@ -23,20 +23,20 @@ int main(int argc, char ** argv) {
     return 1;
   }
 
-    printf("Start simple test\n");
+  printf("Start simple test\n");
 
 
-
+  printf("void * a \n");
   void * a = simple_malloc(0x200);
-
+  printf("void * b \n");
   void * b = simple_malloc(0x100);
-
+  printf("Simple free\n");
   simple_free(a);
 
   simple_malloc(0x100);
 
   simple_free(b);
-
+  printf("Simple block dump\n");
   simple_block_dump(); 
 
   return 0;
