@@ -2,6 +2,7 @@
 /* Test routines to be included at the end of mm.c */
 
 
+#include <stdio.h>
 /**
  * @name    simple_macro_test
  * @brief   Makes an internal test of the given macros
@@ -16,6 +17,7 @@ int simple_macro_test() {
 
   /* Test separately for 32 and 64 bit addresses */
   for (i =0; i < 2; i++) {
+    printf("%d \n", i);
     p->next = NULL;
     /* Check that next and free are properly separated */
     SET_NEXT(p, addr[i]);
@@ -38,13 +40,17 @@ int simple_macro_test() {
 
     /* Check size for forward next pointer */
     SET_NEXT(p, (void *) ((uintptr_t) p + sizeof(BlockHeader) + 0x100 ) );
+    printf("%p, p next %p \n",p,p->next);
     if (SIZE(p) !=  0x100)      return 6 + i*10;
-
+    printf("I reach here \n");
     /* Check size for backward next pointer (dummy block) */
     SET_NEXT(p, (void *) ((uintptr_t) p + sizeof(BlockHeader) - 0x100 ) );
     if (SIZE(p) != 0 && SIZE(p) < 0x800000000000000 )   return 7 + i*10;
-  
+    printf("I reach here also \n");
+    printf("%p, p next %p \n",p,p->next);
   }
+  printf("I reach here, %d \n", ret);
+
   return ret;
 } 
 
