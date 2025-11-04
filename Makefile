@@ -3,7 +3,7 @@ CC = gcc
 CCWARNINGS = -W -Wall -Wno-unused-parameter -Wno-unused-variable
 CCOPTS     = -std=c11 -g -O0
 
-// CFLAGS = $(CCWARNINGS) $(CCOPTS)
+CFLAGS = $(CCWARNINGS) $(CCOPTS)
 
 CFLAGS = -c -Wall $(shell pkg-config --cflags check)
 TST_LIBS = $(shell pkg-config --libs check)

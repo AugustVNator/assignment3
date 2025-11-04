@@ -6,7 +6,7 @@
 
 #include "io.h"
 
-/*TODO - change for own implementation of malloc
+/*TODO - change for own implementation of malloc*/
 /* 
  * This implementation cheats by using stdio
  * 
