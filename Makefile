@@ -5,9 +5,6 @@ CCOPTS     = -std=c11 -g -O0
 
 CFLAGS = $(CCWARNINGS) $(CCOPTS)
 
-CFLAGS = -c -Wall $(shell pkg-config --cflags check)
-TST_LIBS = $(shell pkg-config --libs check)
-
 TEST_SOURCES := test_mm.c mm.c memory_setup.c
 TEST_OBJECTS := $(TEST_SOURCES:.c=.o)
 
@@ -26,10 +23,10 @@ APP_EXECUTABLE  = cmd_int
 all: $(TEST_EXECUTABLE) $(CHECK_EXECUTABLE) $(APP_EXECUTABLE)
 
 %.o: %.c mm.h
-	$(CC) $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(TEST_EXECUTABLE): $(TEST_OBJECTS)
-	$(CC) $(CFLAGS) $(TEST_OBJECTS) -o $@ 
+	$(CC) $(CFLAGS) $(TEST_OBJECTS) -o $@
 
 $(CHECK_EXECUTABLE): $(CHECK_OBJECTS)
 	$(CC) $(CFLAGS) $(CHECK_OBJECTS) -o $@ -lcheck -lm #-lsubunit
@@ -39,4 +36,3 @@ $(APP_EXECUTABLE): $(APP_OBJECTS)
 
 clean:
 	rm -rf *o *~ $(TEST_EXECUTABLE) $(CHECK_EXECUTABLE) $(APP_EXECUTABLE)
-
