@@ -30,11 +30,11 @@ int main(int argc, char ** argv) {
   void * a = simple_malloc(0x200);
   printf("void * b \n");
   void * b = simple_malloc(0x100);
-  printf("Simple free\n");
+  printf("Simple free a \n");
   simple_free(a);
-
+  printf("Simple malloc 0x100 \n");
   simple_malloc(0x100);
-
+  printf("Simple free b \n");
   simple_free(b);
   printf("Simple block dump\n");
   simple_block_dump(); 
