@@ -50,13 +50,18 @@ void simple_init() {
     if (aligned_memory_start + 2*sizeof(BlockHeader) + MIN_SIZE <= aligned_memory_end) {
       /* TODO: Place first and last blocks and set links and free flags properly */
       first = (BlockHeader *) aligned_memory_start;
-      last = first + SIZE(first);
+      last = first;
+      printf("Setting next and free \n");
       SET_NEXT(first, last);
+      printf("Next 2 \n");
       SET_NEXT(last, first);
+      printf("Free 1 \n");
       SET_FREE(first, 1);
+      printf("Free 2 \n");
       SET_FREE(last, 1);
-
+      printf("Set next and free \n");
     }
+    printf("Current = first \n");
     current = first;     
   } 
 }
@@ -73,9 +78,9 @@ void simple_init() {
  *
  */
 void* simple_malloc(size_t size) {
-  
+  printf("Is first == null? \n");
   if (first == NULL) {
-    printf("init simple");
+    printf("init simple \n");
     simple_init();
     if (first == NULL) return NULL;
   }
@@ -95,11 +100,16 @@ void* simple_malloc(size_t size) {
         /* Will the remainder be large enough for a new block? */
         if (SIZE(current) - aligned_size < sizeof(BlockHeader) + MIN_SIZE) {
           /* TODO: Use block as is, marking it non-free*/
+          SET_NEXT(current, aligned_size);
+          SET_FREE(current, 1);
+
         } else {
+          SET_NEXT(current, aligned_size);
+          SET_FREE(current, 1);
           /* TODO: Carve aligned_size from block and allocate new free block for the rest */
         }
-        
-        return (void *) NULL; /* TODO: Return address of current's user_block and advance current */
+        current = GET_NEXT(current);
+        return (void *) current; /* TODO: Return address of current's user_block and advance current */
       }
     }
 
