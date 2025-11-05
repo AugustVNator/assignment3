@@ -22,9 +22,9 @@ typedef struct header {
 /* Macros to handle the free flag at bit 0 of the next pointer of header pointed at by p */
 // We type cast to uintptr_t so bitwise operations are possible on n and f
 #define GET_NEXT(p)    (void *) ((uintptr_t) p->next & ~0x1 )    /* Mask out free flag */
-#define SET_NEXT(p,n)  p->next = (void *) (((uintptr_t) (n) & ~0x1) | ((uintptr_t) p->next & 0x1)) /* Preserve free flag */
+#define SET_NEXT(p,n)  p->next = (void *) (((uintptr_t) (n) & ~0x1) | ((uintptr_t) GET_FREE(p))) /* Preserve free flag */
 #define GET_FREE(p)    (uint8_t) ( (uintptr_t) (p->next) & 0x1 )   /* OK -- do not change */
-#define SET_FREE(p, f)  p->next = (void *) (((uintptr_t) p->next & ~0x1) | ((f) & 0x1)) /* Set free bit of p->next to f */
+#define SET_FREE(p, f)  p->next = (void *) ((uintptr_t) GET_NEXT(p) | ((f) & 0x1)) /* Set free bit of p->next to f */
 #define SIZE(p)        (size_t) ((uintptr_t) GET_NEXT(p) - ((uintptr_t) p + sizeof(BlockHeader)) )/* Calculate size of block from p and p->next */
 
 #define MIN_SIZE     (8)   // A block should have at least 8 bytes available for the user
