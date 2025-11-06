@@ -292,9 +292,9 @@ START_TEST (test_fit_strategy) {
 
   ptr5 = MALLOC(10 * sizeof(int));
 
-  // If our program used first fit, it would be placed
-  ck_assert(ptr5 != ptr1);
-  // Likewise it should placed after ptr4
+  // If our program used first fit, ptr4 would be placed at ptr1 original address
+  ck_assert(ptr4 != ptr1);
+  // Likewise ptr5 should be placed after ptr4
   ck_assert(ptr5 > ptr4);
 
 
