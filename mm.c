@@ -99,13 +99,13 @@ void* simple_malloc(size_t size) {
       }
       /* Check if free block is large enough */
       if (SIZE(current) >= aligned_size) {
-        void * user_ptr;
+        void * block_ptr;
         /* Will the remainder be large enough for a new block? */
         if (SIZE(current) - aligned_size < sizeof(BlockHeader) + MIN_SIZE) {
           //Use block as is
 
           SET_FREE(current, 0);
-          user_ptr = (void *) current->user_block;
+          block_ptr = (void *) current->user_block;
           current = GET_NEXT(current);
 
         } else {
@@ -121,10 +121,10 @@ void* simple_malloc(size_t size) {
           SET_NEXT(current, new_free_block);
           SET_FREE(current, 0);
 
-          user_ptr = (void *) current->user_block;
+          block_ptr = (void *) current->user_block;
           current = new_free_block;
         }
-        return user_ptr;
+        return block_ptr;
       }
     }
 
