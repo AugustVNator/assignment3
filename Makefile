@@ -29,7 +29,7 @@ $(TEST_EXECUTABLE): $(TEST_OBJECTS)
 	$(CC) $(CFLAGS) $(TEST_OBJECTS) -o $@
 
 $(CHECK_EXECUTABLE): $(CHECK_OBJECTS)
-	$(CC) $(CFLAGS) $(CHECK_OBJECTS) -o $@ -lcheck -lm #-lsubunit
+	$(CC) $(CFLAGS) $(CHECK_OBJECTS) -o $@ -lcheck -lm -lsubunit
 
 $(APP_EXECUTABLE): $(APP_OBJECTS)
 	$(CC) $(CFLAGS) $(APP_OBJECTS) -o $@
