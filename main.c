@@ -1,61 +1,141 @@
+#include <stdlib.h>
+
 #include "io.h"
 
-char msg[] = "\n ** You need to copy your main.c file from Assignment 1 **\n";
+#include <unistd.h>
+
+#include "mm.h"
+
+
+
+
 /**
- * The main function uses the various read and write functions defined in io.h
- * as a demonstration to you on how to use it.
+ * @name  main
+ * @brief This function is the entry point to your program
+ * @return 0 for success, anything else for failure
  *
- * It reads in a char from stdin and prints in back out onto
- * stdout while incrementing a counter. Note that the shell will usually
- * buffer IO until a newline is encountered.  So you may not see output
- * until you press the return or enter key.
  *
- * Entering a 'q' character in the input will cause the function
- * to stop reading and return printing the value of the counter.
+ * Then it has a place for you to implementation the command 
+ * interpreter as  specified in the handout.
  */
 
-int
-main()
-{
-  /* Create a counter to count how many bytes we read in */
-  int count = 0;
 
-  char * prompt = "Press q then return to quit\n";
+typedef struct Node {
+    int data;
+    struct Node *next;
+} Node;
 
-  write_string(prompt);
-
-  /* Next just read a char then write it.  Over and over again.
-   * We will use the 'q' character as an indicator of when to
-   * terminate.  */
-  char c;
-  do
-  {
-    c = read_char();
-
-    /* Perform error checking */
-    if (c < 0) {
-      /* There was an error.  Just break for now */
-      break;
-    }
-
-    /* Write c to stdout and increment counter*/
-    write_char(c);
-    count++;
-  }
-  while (c != 'q'); /* quit when we see a q char */
-
-  write_char('\n');
-  if (c == 'q') {
-    /* Write final counter value */
-    write_string("count = ");
-    write_int(count);
-    write_char('\n');
-  } else {
-    write_string("ERROR");
-    write_char('\n');
-    return 1;
-  }
-
-  return 0;
+Node *createNode(int data) {
+    Node *newNode = simple_malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
 }
 
+void insertAtEnd(Node **head, int data) {
+    Node *newNode = createNode(data);
+    if (*head == NULL) {
+        *head = newNode;
+        return;
+    }
+    Node *temp = *head;
+    while (temp->next != NULL) {
+        temp = temp->next;
+    }
+    temp->next = newNode;
+}
+
+void deleteFromEnd(Node **head) {
+    if (*head == NULL) {
+        return;
+    }
+    Node *temp = *head;
+    if (temp->next == NULL) {
+        simple_free(temp);
+        *head = NULL;
+        return;
+    }
+    while (temp->next->next != NULL) {
+        temp = temp->next;
+    }
+    simple_free(temp->next);
+    temp->next = NULL;
+}
+
+void itoaAndReverse(int n) {
+    int numbers[100];
+    int i = 0;
+
+    do
+    {
+        numbers[i++] = n % 10;
+        n /= 10;
+    }
+    while (n > 0);
+    for (int j = i-1; j >= 0; j--) {
+        write_int(numbers[j]);
+    }
+}
+
+void printLinkedList(Node *head) {
+    Node *temp = head;
+    while (temp != NULL) {
+        if (temp->data > 9) {
+            itoaAndReverse(temp->data);
+        } else {
+            write_int(temp->data);
+        }
+        //Undgå at skrive komma, hvis kun et tal
+        if (temp->next != NULL) {
+            write_char(',');
+        }
+        temp = temp->next;
+    }
+    write_char(';');
+    simple_free(temp);
+}
+
+ssize_t flushInputBuffer() {
+    char buf[1000];
+    ssize_t bytes_read = read(STDIN_FILENO, buf, sizeof(buf));
+    // Returnér bytes_read for at undgå advarsel for ubrugt variabel
+    return bytes_read;
+}
+
+int main() {
+
+
+    Node *head = NULL;
+    int count = 0;
+
+    // cmd bliver initialiseret her, så while do-while
+    // kan "se" ændringerne
+    char cmd;
+
+    do
+    {
+        cmd = read_char();
+
+        if (cmd == 'a') {
+            insertAtEnd(&head, count);
+            count++;
+        } else if (cmd == 'b') {
+            count++;
+        } else if (cmd == 'c') {
+            deleteFromEnd(&head);
+            count++;
+        }
+    }
+    while (cmd == 'a' || cmd == 'b' || cmd == 'c');
+
+    printLinkedList(head);
+
+
+    // Vi tjekker om cmd er EOF, hvilket ellers ville
+    // fryse programmet i flushInputBuffer funktionen
+    if (cmd != EOF && cmd != '\n') {
+        flushInputBuffer(); // Vi sikrer os, at inputbufferen ikke påvirker vores terminal
+    }
+
+    return 0;
+}

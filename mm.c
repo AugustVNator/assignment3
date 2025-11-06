@@ -12,6 +12,9 @@
 
 
 
+
+
+
 /* Proposed data structure elements */
 
 typedef struct header {
@@ -145,7 +148,11 @@ void* simple_malloc(size_t size) {
  * @param void *ptr Pointer to the memory to free.
  *
  */
+
 void simple_free(void * ptr) {
+  if (ptr ==NULL) {
+    return;
+  }
 
   BlockHeader * block = (BlockHeader * ) ((uintptr_t) ptr - sizeof(BlockHeader));
 
