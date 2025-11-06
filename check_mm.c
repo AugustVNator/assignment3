@@ -276,6 +276,35 @@ START_TEST (test_memory_exerciser)
 
 END_TEST
 
+
+START_TEST (test_fit_strategy) {
+  int *ptr1, *ptr2, *ptr3, *ptr4, *ptr5;
+
+  ptr1 = MALLOC(10 * sizeof(int));
+  ptr2 = MALLOC(10 * sizeof(int));
+  ptr3 = MALLOC(10 * sizeof(int));
+
+  FREE(ptr1);
+
+  ptr4 = MALLOC(10 * sizeof(int));
+
+  FREE(ptr2);
+
+  ptr5 = MALLOC(10 * sizeof(int));
+
+  // If our program used first fit, it would be placed
+  ck_assert(ptr5 != ptr1);
+  // Likewise it should placed after ptr4
+  ck_assert(ptr5 > ptr4);
+
+
+  FREE(ptr3);
+  FREE(ptr4);
+  FREE(ptr5);
+
+}
+
+END_TEST
 /**
  * { You may provide more unit tests here, but remember to add them to simple_malloc_suite }
  */
@@ -293,7 +322,7 @@ Suite* simple_malloc_suite()
   tcase_add_test (tc_core, test_simple_allocation);
   tcase_add_test (tc_core, test_simple_unique_addresses);
   tcase_add_test (tc_core, test_memory_exerciser);
-
+  tcase_add_test (tc_core, test_fit_strategy);
   suite_add_tcase(s, tc_core);
   return s;
 }
