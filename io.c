@@ -1,22 +1,15 @@
-
 #include <errno.h>
 #include <unistd.h>
-#include <stdio.h>
-#include <string.h>
-
 #include "io.h"
-
-/*TODO - change for own implementation of malloc*/
-/* 
- * This implementation cheats by using stdio
- * 
- */
+#include <string.h>
 
 /* Reads next char from stdin. If no more characters, it returns EOF */
 int
 read_char() {
   char buf[1];
   ssize_t bytes_read = read(STDIN_FILENO, buf, sizeof(buf));
+
+  // I think this might be wrong, it should return EOF without throwing an error?
   if (bytes_read > 0) {
     return buf[0];
   }
@@ -45,11 +38,18 @@ write_string(char *s) {
   return EOF;
 }
 
-/* Writes n to stdout (without any formatting).   
+/* Writes n to stdout (without any formatting).
  * If no errors occur, it returns 0, otherwise EOF
  */
 int
 write_int(int n) {
-  int r = printf("%d", n);
-  return (r > 0 ? 0 : EOF); 
+  char convertedInt = n + '0';
+  char *pCI = &convertedInt;
+
+  ssize_t bytes_write = write(STDOUT_FILENO, pCI, sizeof(convertedInt));
+
+  if (bytes_write > 0) {
+    return 0;
+  }
+  return EOF;
 }
